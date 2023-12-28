@@ -6,6 +6,8 @@ import (
 	"io"
 	"net"
 	"os"
+	"os/exec"
+	"strings"
 
 	"github.com/Jcd1230/socks-router/log"
 )
@@ -24,6 +26,15 @@ func (m Map) Match(network string, address AddressDetails) *Target {
 	return nil
 }
 
+func (m Map) MatchCommand(network string, address AddressDetails) string {
+	for _, route := range m.Routes {
+		if target := route.Match(network, address); nil != target {
+			return route.Command()
+		}
+	}
+	return ""
+}
+
 func (m Map) Dial(network, address string) (c net.Conn, err error) {
 	if ad, err := ParseAddress(address); nil != err {
 		return nil, err
@@ -38,12 +49,26 @@ func (m Map) Dial(network, address string) (c net.Conn, err error) {
 			dial = DirectTarget.Dialer.Dial
 		}
 		log.Access.Printf("connecting %v", desc)
-		if conn, err := dial(network, address); nil != err {
-			log.Error.Printf("Failed to connect %v: %v", desc, err)
-			return nil, err
-		} else {
+		if conn, err := dial(network, address); nil == err {
 			return conn, nil
 		}
+		// First try failed. Run command if present and try once more.
+		if command := m.MatchCommand(network, *ad); "" != command {
+			var commandline= strings.Fields(command)
+			log.Info.Println("Running command: "+command)
+			if out, err := exec.Command(commandline[0], commandline[1:]...).CombinedOutput(); nil != err {
+				log.Error.Printf("Failed to run retry-command: %v: %v", command, err)
+				return nil, err
+			} else {
+				log.Info.Printf("Command output:\n%s", out)
+			}
+			if conn,err := dial(network, address); nil == err {
+				return conn, nil
+			} else {
+				log.Error.Printf("Failed to connect %v: %v", desc, err)
+			}
+		}
+		return nil, err
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 type Route interface {
 	// could theoretically create dynamic targets for each match
 	Match(network string, address AddressDetails) *Target
+	Command() string
 }
 
 func ParseRoute(line string) (Route, error) {
@@ -18,16 +19,19 @@ func ParseRoute(line string) (Route, error) {
 	}
 
 	if '^' != line[0] {
+		// Extract optional retry command from comment
+		var comment = strings.Split(line, "#")[1]
+		var retryCommand = strings.Split(comment,"command=")[1]
 		// drop trailing comment
 		line = strings.Split(line, "#")[0]
 		fields := strings.Fields(line)
-		if 2 != len(fields) {
+		if len(fields) != 2 {
 			return nil, fmt.Errorf("Invalid route: %q", line)
 		}
 		if target, err := ParseTarget(fields[1]); nil != err {
 			return nil, err
 		} else {
-			return parseSimpleMatch(fields[0], target)
+			return parseSimpleMatch(fields[0], target, retryCommand)
 		}
 	} else {
 		return nil, fmt.Errorf("Regular expressions not supported yet: %q", line)
@@ -38,6 +42,11 @@ type cidrRoute struct {
 	CIDR   net.IPNet
 	Port   string
 	Target *Target
+	RetryCommand string
+}
+
+func (r cidrRoute) Command() string {
+	return r.RetryCommand
 }
 
 func (r cidrRoute) Match(network string, address AddressDetails) *Target {
@@ -52,6 +61,11 @@ type domainRoute struct {
 	Domain string
 	Port   string
 	Target *Target
+	RetryCommand string
+}
+
+func (r domainRoute) Command() string {
+	return r.RetryCommand
 }
 
 func removeTrailingDot(fqdn string) string {
@@ -79,7 +93,7 @@ func (r domainRoute) Match(network string, address AddressDetails) *Target {
 	return nil
 }
 
-func parseSimpleMatch(match string, target *Target) (Route, error) {
+func parseSimpleMatch(match string, target *Target, retryCommand string) (Route, error) {
 	var network string
 	var host string
 	var port string
@@ -141,12 +155,14 @@ func parseSimpleMatch(match string, target *Target) (Route, error) {
 			Domain: removeTrailingDot(host),
 			Port:   port,
 			Target: target,
+			RetryCommand: retryCommand,
 		}, nil
 	} else {
 		return cidrRoute{
 			CIDR:   ipnet,
 			Port:   port,
 			Target: target,
+			RetryCommand: retryCommand,
 		}, nil
 	}
 
