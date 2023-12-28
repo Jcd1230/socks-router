@@ -8,8 +8,8 @@ import (
 
 	homedir "github.com/mitchellh/go-homedir"
 
-	"github.com/rus-cert/socks-router/log"
-	"github.com/rus-cert/socks-router/routing"
+	"github.com/Jcd1230/socks-router/log"
+	"github.com/Jcd1230/socks-router/routing"
 )
 
 type stringList struct {

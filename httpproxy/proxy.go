@@ -7,7 +7,7 @@ import (
 	"net/http/httputil"
 	"time"
 
-	"github.com/rus-cert/socks-router/log"
+	"github.com/Jcd1230/socks-router/log"
 )
 
 type httpProxy struct {

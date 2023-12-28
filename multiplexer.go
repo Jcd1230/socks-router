@@ -6,9 +6,9 @@ import (
 	"net"
 	"time"
 
-	"github.com/rus-cert/socks-router/connpeeker"
-	"github.com/rus-cert/socks-router/log"
-	"github.com/rus-cert/socks-router/routing"
+	"github.com/Jcd1230/socks-router/connpeeker"
+	"github.com/Jcd1230/socks-router/log"
+	"github.com/Jcd1230/socks-router/routing"
 )
 
 // Dialer is imported from routing/

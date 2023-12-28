@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rus-cert/socks-router/httpproxy"
+	"github.com/Jcd1230/socks-router/httpproxy"
 )
 
 type socks5ResultCode byte

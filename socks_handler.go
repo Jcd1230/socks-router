@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/rus-cert/socks-router/socks"
+	"github.com/Jcd1230/socks-router/socks"
 )
 
 type socksHandler struct {

@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/rus-cert/socks-router/connpeeker"
-	"github.com/rus-cert/socks-router/httpproxy"
-	"github.com/rus-cert/socks-router/log"
+	"github.com/Jcd1230/socks-router/connpeeker"
+	"github.com/Jcd1230/socks-router/httpproxy"
+	"github.com/Jcd1230/socks-router/log"
 )
 
 type httpHandler struct {

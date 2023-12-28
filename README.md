@@ -15,7 +15,7 @@ connection.
 
 Build using go:
 
-    go get github.com/rus-cert/socks-router
+    go get github.com/Jcd1230/socks-router
 
 There is also a systemd service file which assumes the binary ends up in
 `/usr/bin` and the config in `/etc/socks-router.routes` and listens to

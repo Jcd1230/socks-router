@@ -7,7 +7,7 @@ import (
 	"net"
 	"os"
 
-	"github.com/rus-cert/socks-router/log"
+	"github.com/Jcd1230/socks-router/log"
 )
 
 // first match wins
